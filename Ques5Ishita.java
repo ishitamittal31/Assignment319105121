@@ -1,146 +1,132 @@
+//19105121
+import java.util.Scanner;
+import java.util.ArrayList;
 
-import java.util.*;
- 
 public class Ques5Ishita {
+    static ArrayList<ArrayList<String>> arrs = new ArrayList<ArrayList<String>>();
 
-    static int dp[][]; // create List which will store all sets of operations
-    static ArrayList<ArrayList<String> > array_list = new ArrayList<ArrayList<String> >();
- 
-    static void print(String s1, String s2, ArrayList<String> change_all)
-    {
-        int i = s1.length();
-        int j = s2.length();
-        boolean ff=true;
-        while (ff) {
- 
+    static void printAllChanges(String word1, String word2, ArrayList<String> changes,int[][] cost) {
+
+        int i = word1.length();
+        int j = word2.length();//length
+
+        while (true) {
+
             if (i == 0 || j == 0) {
-                array_list.add(change_all);
+                arrs.add(changes);
                 break;
             }
- 
-            if (s1.charAt(j - 1) == s2.charAt(i - 1)) {
+
+            if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
                 i--;
                 j--;
             }
- 
-            else {
-                boolean if_first = false, if_second = false;
- 
-                if (dp[i][j] == dp[i - 1][j - 1] + 1) {
- 
-                    change_all.add("Change " + s1.charAt(i - 1)
-                                + " to " + s2.charAt(j - 1));
-                    i--;
-                    j--;
- 
-                    if_first = true;
-                }
- 
-                if (dp[i][j] == dp[i - 1][j] + 1) {
-                    if (if_first == false) {
-                        change_all.add("Delete " + s1.charAt(i - 1));
-                        i--;
-                    }
-                    else {
-                       
-                        ArrayList<String> change_all2 = new ArrayList<String>();
-                        change_all2.addAll(change_all);
- 
-                        change_all2.remove(change_all.size() - 1);
- 
-                        change_all2.add("Delete " + s1.charAt(i));
- 
-                        print(s1.substring(0, i),
-                                        s2.substring(0, j + 1), change_all2);
-                    }
- 
-                    if_second = true;
-                }
- 
-                if (dp[i][j] == dp[i][j - 1] + 1) {
-                    if (if_first == false && if_second == false) {
-                        change_all.add("Add " + s2.charAt(j - 1));
-                        j--;
-                    }
-                    else {
- 
-                        ArrayList<String> change_all2 = new ArrayList<String>();
-                        change_all2.addAll(change_all);
-                        change_all2.remove(change_all.size() - 1);
-                        change_all2.add("Add " + s2.charAt(j));
- 
-                        print(s1.substring(0, i + 1),  s2.substring(0, j), change_all2);
-                                       
-                    }
-                }
-            }
-        }
-    }
- 
-   
-    static void edit_dp(String s1, String s2)
-    {
-        int l1 = s1.length();
-        int l2 = s2.length();
-        int[][] DP = new int[l1 + 1][l2 + 1];
- 
-        for (int i = 0; i <= l1; i++)
-            DP[i][0] = i;
-        for (int j = 0; j <= l2; j++)
-            DP[0][j] = j;
- 
-        for (int i = 1; i <= l1; i++) {
-            for (int j = 1; j <= l2; j++) {
- 
 
-                if (s1.charAt(i - 1) == s2.charAt(j - 1))
-                    DP[i][j] = DP[i - 1][j - 1];
-                else {
- 
-                    DP[i][j] = min(DP[i - 1][j - 1],
-                                   DP[i - 1][j], DP[i][j - 1])
-                               + 1;
+            else {
+                boolean if1 = false, if2 = false;
+
+                if (cost[i][j] == cost[i - 1][j - 1] + 1) {
+
+                    changes.add("Change  " + word1.charAt(i - 1) + " to " + word2.charAt(j - 1));
+                    i--;//decrement
+                    j--;
+
+                    if1 = true;
+                }
+
+                if (cost[i][j] == cost[i - 1][j] + 1) {
+                    if (if1 == false) {
+                        changes.add("Delete  " + word1.charAt(i - 1));
+                        i--;
+                    } else {
+                        
+                        ArrayList<String> changeword2 = new ArrayList<String>();
+                        changeword2.addAll(changes);//changes
+
+                        changeword2.remove(changes.size() - 1);
+
+                        changeword2.add("Delete " + word1.charAt(i));
+
+                        printAllChanges(word1.substring(0, i),
+                                word2.substring(0, j + 1), changeword2,cost);
+                    }
+
+                    if2 = true;
+                }
+
+                if (cost[i][j] == cost[i][j - 1] + 1) {
+                    if (if1 == false && if2 == false) {
+                        changes.add("Add " + word2.charAt(j - 1));//add
+                        j--;
+                    } else {
+
+                        ArrayList<String> changeword2 = new ArrayList<String>();
+                        changeword2.addAll(changes);
+                        changeword2.remove(changes.size() - 1);
+                        changeword2.add("Add " + word2.charAt(j));
+
+                        printAllChanges(word1.substring(0, i + 1), word2.substring(0, j), changeword2,cost);//print all changes
+                    }
                 }
             }
         }
- 
-        dp = DP;
     }
- 
-    static int min(int a, int b, int c)
-    {
-        int z = Math.min(a, b);
-        return Math.min(z, c);
-    }
-    static void displayAll(String s1, String s2,
-                          ArrayList<String> change_all)
-    {
- 
-        // Function to print all the ways
-        print(s1, s2, new ArrayList<String>());
- 
+
+    static void printWays(String word1, String word2, ArrayList<String> changes,int[][] cost) {
+
+        printAllChanges(word1, word2, new ArrayList<String>(),cost);
+
         int i = 1;
- 
-        // print all the possible ways
-        for (ArrayList<String> ar : array_list) {
+
+        for (ArrayList<String> ar : arrs) {
             System.out.println("\nMethod " + i++ + " : \n");
             for (String s : ar) {
-                System.out.println(s);
+                System.out.println(s);//print
             }
         }
     }
- 
-    // Driver Code
-    public static void main(String[] args) throws Exception
-    {
-        String s1 = "abcdef";
-        String s2 = "axcdfdh";
- 
-        // calculate the DP matrix
+
+    static int[][] costArray(String word1, String word2) {
+        int m = word1.length();
+        int n = word2.length();
+
+        int[][] cost = new int[m + 1][n + 1];
+        for (int i = 0; i <= m; i++)
+            cost[i][0] = i;
+        for (int i = 1; i <= n; i++)
+            cost[0][i] = i;
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+               
+                if (word1.charAt(i - 1) == word2.charAt(j - 1))
+                    cost[i][j] = cost[i - 1][j - 1];
+                else {
+                    int a = cost[i - 1][j - 1]; 
+                    int b = cost[i][j - 1];// Insert operation
+                    int c = cost[i - 1][j]; // Replace operation
+                    // minimum of three operations possible
+                    cost[i][j] = a < b ? (a < c ? a : c) : (b < c ? b : c);
+                    cost[i][j]++;
+                }
+            }
+        }
+        return cost;
+
+    }
+
+    public static void main(String[] args) throws Exception {
        
-        edit_dp(s1, s2);
- 
-        // Function to print all ways
-        displayAll(s1, s2, new ArrayList<String>());
+        Scanner s = new Scanner(System.in);
+        System.out.print("Input first string ");
+        String word1 = s.nextLine();
+        System.out.print("Input second string");
+        String word2 = s.nextLine();
+
+        int[][] cost = costArray(word1, word2);
+
+        // print the steps
+        printWays(word1, word2, new ArrayList<String>(),cost);
+
     }
 }
